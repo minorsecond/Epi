@@ -9,49 +9,40 @@ use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
 
-# Ebola infectious period is 2-21 days. 14 is used as a middle point.
-# Don't yet know the infectivity or contact rate. Leaving at defaults.
-#my $NUM_IND = 5000;
 print "Enter number of individuals: ";
 my $NUM_IND = <STDIN>;
-chomp $NUM_IND;
 exit 0 if ($NUM_IND eq "");
 
-#my $CONTACT_RATE = 5;
+print "Enter initial number of infections: ";
+my $INIT = <STDIN>;
+exit 0 if ($INIT eq "");
+
 print "Enter number contacts per individual: ";
 my $CONTACT_RATE = <STDIN>;
-chomp $CONTACT_RATE;
 exit 0 if ($CONTACT_RATE eq "");
 
-#my $INFECTIOUS_PERIOD = 14;
 print "Enter disease infectious period: ";
 my $INFECTIOUS_PERIOD = <STDIN>;
-chomp $INFECTIOUS_PERIOD;
 exit 0 if ($INFECTIOUS_PERIOD eq "");
 
-#my $INFECTIVITY = 0.1;
 print "Enter disease virulence: ";
 my $INFECTIVITY = <STDIN>;
-chomp $INFECTIVITY;
 exit 0 if ($INFECTIVITY eq "");
 
-#my $INCUB = 5;
 print "Enter disease incubation period: ";
 my $INCUB = <STDIN>;
-chomp $INCUB;
 exit 0 if ($INCUB eq "");
 
-#my $DURATION = 365;
+print "Enter number of vaccinations per day: ";
+my $VAC = <STDIN>;
+
+print "Enter vaccine efficacy: ";
+my $EF = <STDIN>;
+
 print "Enter duration of model: ";
 my $DURATION = <STDIN>;
-chomp $DURATION;
 exit 0 if ($DURATION eq "");
-
-print "Enter random number seed: ";
-my $SEED = <STDIN>;
-chomp $SEED;
-exit 0 if ($SEED eq "");
-srand $SEED;
+print "this works";
 
 my %population = ();
 
@@ -62,12 +53,10 @@ for(my $i = 0; $i< $NUM_IND; $i++)
 	$population{$i}{'age'} = int(rand(80));
 	$population{$i}{'dayOfInf'} = 0;
 	$population{$i}{'dayofExp'} = 0;
-	#$population{$i}{'x'} =
-	#$population{$i}{'y'} = 
 }
 
 #Expose a few individuals to start off the epidemic
-for(my $i = 0; $i < 5; $i++) 
+for(my $i = 0; $i = $INIT; $i++) 
 {
 	$in = int(rand($NUM_IND));
 	$population{$in}{'infState'} = 1;
@@ -96,7 +85,7 @@ foreach my $person (keys %population)
 
 
 print "Before initiation\n";
-print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREC: ".$rec."\n";
+print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
 
 #generating contacts
 #create a clone of %population
@@ -121,7 +110,7 @@ for(my $day = 0; $day < $DURATION; $day++)
 			{
 				#Making sure that a person doesnt contact himself
 				my $r = $person;
-				while($r == $person ) 
+				while($r == $person) 
 				{
 					$r = int(rand($NUM_IND));
 				}
@@ -131,7 +120,7 @@ for(my $day = 0; $day < $DURATION; $day++)
 					if($population_copy{$r}{'infState'} == 0)
 					{
 						$population_copy{$r}{'infState'} = 1;
-					}	
+					}
 				}	
 			}			
 		
@@ -150,12 +139,13 @@ for(my $day = 0; $day < $DURATION; $day++)
 			{
 				#Making sure that a person doesnt contact himself
 				my $r = $person;
-				while($r == $person ) 
+				while($r == $person) 
 				{
 					$r = int(rand($NUM_IND));
 				}
 				#Infect contacted person based on infectivity
-				if(rand() < $INFECTIVITY) {
+				if(rand() < $INFECTIVITY) 
+				{
 					if($population_copy{$r}{'infState'} == 0)
 					{
 						$population_copy{$r}{'infState'} = 1;
@@ -164,9 +154,30 @@ for(my $day = 0; $day < $DURATION; $day++)
 			}			
 		
 		}
-	
 	}
 
+	# Remove vaccinated individuals
+	foreach my $person (keys %population)
+	{
+		if($population{$person}{'infState'} == 0)
+		{
+			for(my $i = 0; $i<$VAC; $i++)
+			{
+				my $r = $person;
+				while($r == $person)
+				{
+					$r = int(rand($NUM_IND));
+				}
+				if(rand() < $EF)
+				{
+					if($population_copy{$r}{'infState'} == 0)
+					{
+						$population_copy{$r}{'infState'} = 3;
+					}
+				}
+			}
+		}
+	}
 	
 	#copy contents of temporary copy to original one
 	%population = %{dclone(\%population_copy)};
@@ -221,11 +232,10 @@ for(my $day = 0; $day < $DURATION; $day++)
 
 
 	print "Day ".$day."\n";
-	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREC: ".$rec."\n";
+	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
 	#print Dumper(\%population);
 	#print "\n-------------\n";
 	#print Dumper(\%population_copy);
 	#print "\n-------------\n";
 
-} 	
-
+}

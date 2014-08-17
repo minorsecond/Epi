@@ -47,6 +47,12 @@ my $DURATION = <STDIN>;
 chomp $DURATION;
 exit 0 if ($DURATION eq "");
 
+print "Enter random number seed: ";
+my $SEED = <STDIN>;
+chomp $SEED;
+exit 0 if ($SEED eq "");
+srand $SEED;
+
 my %population = ();
 
 #generate population by adding elements to population structure
@@ -119,8 +125,8 @@ for(my $day = 0; $day < $DURATION; $day++)
 				{
 					$r = int(rand($NUM_IND));
 				}
-				#Infect contacted person based on infectivity
-				if(rand() < $INFECTIVITY) 
+				#Expose person
+				if(rand() < $INFECTIVITY)
 				{
 					if($population_copy{$r}{'infState'} == 0)
 					{

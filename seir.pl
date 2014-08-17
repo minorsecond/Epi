@@ -3,11 +3,14 @@
 
 #!/usr/bin/perl
 
-use 5.10.1;
-#use strict;
+use 5.20.0;
+use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
+STDOUT->autoflush;
+
+my $in = 0;
 
 print "Enter number of individuals: ";
 my $NUM_IND = <STDIN>;
@@ -42,21 +45,20 @@ my $EF = <STDIN>;
 print "Enter duration of model: ";
 my $DURATION = <STDIN>;
 exit 0 if ($DURATION eq "");
-print "this works";
 
 my %population = ();
 
 #generate population by adding elements to population structure
 for(my $i = 0; $i< $NUM_IND; $i++) 
 {
-	$population{$i}{'infState'} = 0; #infection state: s=0, e=1, i=2, r=3
+	$population{$i}{'infState'} = 0;
 	$population{$i}{'age'} = int(rand(80));
 	$population{$i}{'dayOfInf'} = 0;
 	$population{$i}{'dayofExp'} = 0;
 }
 
 #Expose a few individuals to start off the epidemic
-for(my $i = 0; $i = $INIT; $i++) 
+for my $i (0 .. $INIT-1)
 {
 	$in = int(rand($NUM_IND));
 	$population{$in}{'infState'} = 1;
@@ -161,7 +163,7 @@ for(my $day = 0; $day < $DURATION; $day++)
 	{
 		if($population{$person}{'infState'} == 0)
 		{
-			for(my $i = 0; $i<$VAC; $i++)
+			for my $i (0 .. $VAC-1)
 			{
 				my $r = $person;
 				while($r == $person)

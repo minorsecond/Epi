@@ -1,4 +1,5 @@
-#SIR based disease spread model in perl..
+#SIR based disease spread model in perl.
+# Robert Ross Wardrup
 
 #!/usr/bin/perl
 

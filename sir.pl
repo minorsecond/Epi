@@ -11,12 +11,41 @@ use Storable qw(dclone);
 
 # Ebola infectious period is 2-21 days. 14 is used as a middle point.
 # Don't yet know the infectivity or contact rate. Leaving at defaults.
-my $NUM_IND = 5000;
-my $CONTACT_RATE = 5;
-my $INFECTIOUS_PERIOD = 14;
-my $INFECTIVITY = 0.1;
-my $INCUB = 5;
-my $DURATION = 365;
+#my $NUM_IND = 5000;
+print "Enter number of individuals: ";
+my $NUM_IND = <STDIN>;
+chomp $NUM_IND;
+exit 0 if ($NUM_IND eq "");
+
+#my $CONTACT_RATE = 5;
+print "Enter number contacts per individual: ";
+my $CONTACT_RATE = <STDIN>;
+chomp $CONTACT_RATE;
+exit 0 if ($CONTACT_RATE eq "");
+
+#my $INFECTIOUS_PERIOD = 14;
+print "Enter disease infectious period: ";
+my $INFECTIOUS_PERIOD = <STDIN>;
+chomp $INFECTIOUS_PERIOD;
+exit 0 if ($INFECTIOUS_PERIOD eq "");
+
+#my $INFECTIVITY = 0.1;
+print "Enter disease virulence: ";
+my $INFECTIVITY = <STDIN>;
+chomp $INFECTIVITY;
+exit 0 if ($INFECTIVITY eq "");
+
+#my $INCUB = 5;
+print "Enter disease incubation period: ";
+my $INCUB = <STDIN>;
+chomp $INCUB;
+exit 0 if ($INCUB eq "");
+
+#my $DURATION = 365;
+print "Enter duration of model: ";
+my $DURATION = <STDIN>;
+chomp $DURATION;
+exit 0 if ($DURATION eq "");
 
 my %population = ();
 

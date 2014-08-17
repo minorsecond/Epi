@@ -3,15 +3,24 @@
 
 #!/usr/bin/perl
 
-use 5.20.0;
+use 5.14.2;
 use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
+use Class::CSV;
 STDOUT->autoflush;
 
-my $in = 0;
+print "Day ".$day."\n";
+	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
 
+
+my $in = 0;
+my $csv = Class::CSV->new
+	(
+	fields	=> [qw/Day Sus Exp Inf Rem/]
+	);
+	
 print "Enter number of individuals: ";
 my $NUM_IND = <STDIN>;
 exit 0 if ($NUM_IND eq "");
@@ -235,6 +244,17 @@ for(my $day = 0; $day < $DURATION; $day++)
 
 	print "Day ".$day."\n";
 	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
+	
+	$csv->add_line(
+	{
+		Day	=>	$.day.,
+		SUS	=>	$.sus.,
+		EXP	=>	$.exp.,
+		INF	=>	$.inf.,
+		REM	=>	$.rec.,
+	});
+	$csv-vprint();
+
 	#print Dumper(\%population);
 	#print "\n-------------\n";
 	#print Dumper(\%population_copy);

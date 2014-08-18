@@ -8,51 +8,47 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
-use Class::CSV;
+#use Class::CSV;
 STDOUT->autoflush;
 
-print "Day ".$day."\n";
-	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
-
-
 my $in = 0;
-my $csv = Class::CSV->new
-	(
-	fields	=> [qw/Day Sus Exp Inf Rem/]
-	);
+#my $csv = Class::CSV->new
+#	(
+#	fields	=> [qw/Day Sus Exp Inf Rem/]
+#	);
 	
 print "Enter number of individuals: ";
-my $NUM_IND = <STDIN>;
+chomp(my $NUM_IND = <STDIN>);
 exit 0 if ($NUM_IND eq "");
 
 print "Enter initial number of infections: ";
-my $INIT = <STDIN>;
+chomp(my $INIT = <STDIN>);
 exit 0 if ($INIT eq "");
 
 print "Enter number contacts per individual: ";
-my $CONTACT_RATE = <STDIN>;
+chomp(my $CONTACT_RATE = <STDIN>);
 exit 0 if ($CONTACT_RATE eq "");
 
 print "Enter disease infectious period: ";
-my $INFECTIOUS_PERIOD = <STDIN>;
+chomp(my $INFECTIOUS_PERIOD = <STDIN>);
 exit 0 if ($INFECTIOUS_PERIOD eq "");
 
 print "Enter disease virulence: ";
-my $INFECTIVITY = <STDIN>;
+chomp(my $INFECTIVITY = <STDIN>);
 exit 0 if ($INFECTIVITY eq "");
 
 print "Enter disease incubation period: ";
-my $INCUB = <STDIN>;
+chomp(my $INCUB = <STDIN>);
 exit 0 if ($INCUB eq "");
 
 print "Enter number of vaccinations per day: ";
-my $VAC = <STDIN>;
+chomp(my $VAC = <STDIN>);
 
 print "Enter vaccine efficacy: ";
-my $EF = <STDIN>;
+chomp(my $EF = <STDIN>);
 
 print "Enter duration of model: ";
-my $DURATION = <STDIN>;
+chomp(my $DURATION = <STDIN>);
 exit 0 if ($DURATION eq "");
 
 my %population = ();
@@ -245,15 +241,15 @@ for(my $day = 0; $day < $DURATION; $day++)
 	print "Day ".$day."\n";
 	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
 	
-	$csv->add_line(
-	{
-		Day	=>	$.day.,
-		SUS	=>	$.sus.,
-		EXP	=>	$.exp.,
-		INF	=>	$.inf.,
-		REM	=>	$.rec.,
-	});
-	$csv-vprint();
+#	$csv->add_line(
+#	{
+#		Day	=>	$.day.,
+#		SUS	=>	$.sus.,
+#		EXP	=>	$.exp.,
+#		INF	=>	$.inf.,
+#		REM	=>	$.rec.,
+#	});
+#	$csv-vprint();
 
 	#print Dumper(\%population);
 	#print "\n-------------\n";

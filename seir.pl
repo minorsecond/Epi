@@ -8,14 +8,9 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
-#use Class::CSV;
 STDOUT->autoflush;
 
 my $in = 0;
-#my $csv = Class::CSV->new
-#	(
-#	fields	=> [qw/Day Sus Exp Inf Rem/]
-#	);
 	
 print "Enter number of individuals: ";
 chomp(my $NUM_IND = <STDIN>);
@@ -52,7 +47,13 @@ chomp(my $DURATION = <STDIN>);
 exit 0 if ($DURATION eq "");
 
 my $R0 = $CONTACT_RATE * $INFECTIVITY * $INFECTIOUS_PERIOD;
-print "\nBasic Reproductive Rate (R0): $R0.\n";
+my $V0 = (1 - 1 / $R0) * $NUM_IND;
+print "\n***Basic Reproductive Rate (R0): $R0.***\n";
+print "***Number to vaccinate to prevent sustained spread: $V0.***\n";
+
+print "Use this number in vaccination calculation? (Y/n)\n";
+$_ = <>;
+$VAC = $V0 / $DURATION if /^Y/i;
 print "\n ";
 
 {
@@ -70,6 +71,7 @@ for(my $i = 0; $i< $NUM_IND; $i++)
 	$population{$i}{'age'} = int(rand(80)); #unused at the moment.
 	$population{$i}{'dayOfInf'} = 0;
 	$population{$i}{'dayofExp'} = 0;
+	$population{$i}{'vacState'} = 0;
 }
 
 #Expose a few individuals to start off the epidemic
@@ -124,7 +126,6 @@ for(my $day = 0; $day < $DURATION; $day++)
 		if($population{$person}{'infState'} == 1) 
 		{
 			for my $i (0 .. $CONTACT_RATE-1)
-			#for(my $i = 0; $i<$CONTACT_RATE; $i++) 
 			{
 				#Making sure that a person doesnt contact himself
 				my $r = $person;
@@ -137,7 +138,10 @@ for(my $day = 0; $day < $DURATION; $day++)
 				{
 					if($population_copy{$r}{'infState'} == 0)
 					{
+						if($population_copy{$r}{'vacState'} == 0)
+						{
 						$population_copy{$r}{'infState'} = 1;
+						}
 					}
 				}	
 			}			
@@ -154,7 +158,6 @@ for(my $day = 0; $day < $DURATION; $day++)
 		if($population{$person}{'infState'} == 2) 
 		{
 			for my $i (0 .. $CONTACT_RATE-1)
-			#for(my $i = 0; $i<$CONTACT_RATE; $i++) 
 			{
 				#Making sure that a person doesnt contact himself
 				my $r = $person;
@@ -167,7 +170,10 @@ for(my $day = 0; $day < $DURATION; $day++)
 				{
 					if($population_copy{$r}{'infState'} == 0)
 					{
-						$population_copy{$r}{'infState'} = 1;
+						if($population_copy{$r}{'vacState'} == 0)
+						{
+							$population_copy{$r}{'infState'} = 1;
+						}
 					}	
 				}	
 			}			
@@ -175,23 +181,26 @@ for(my $day = 0; $day < $DURATION; $day++)
 		}
 	}
 
-	# Remove vaccinated individuals
+	# Vaccinate individuals
 	foreach my $person (keys %population)
 	{
 		if($population{$person}{'infState'} == 0)
 		{
-			for my $i (0 .. $VAC-1)
+			if($population{$person}{'vacState'} == 0)
 			{
-				my $r = $person;
-				while($r == $person)
+				for my $i (0 .. $VAC-1)
 				{
-					$r = int(rand($NUM_IND));
-				}
-				if(rand() < $EF)
-				{
-					if($population_copy{$r}{'infState'} == 0)
+					my $r = $person;
+					while($r == $person)
 					{
-						$population_copy{$r}{'infState'} = 3;
+						$r = int(rand($NUM_IND));
+					}
+					if(rand() < $EF)
+					{
+						if($population_copy{$r}{'vacState'} == 0)
+						{
+						$population_copy{$r}{'vacState'} = 1;
+						}
 					}
 				}
 			}
@@ -252,16 +261,6 @@ for(my $day = 0; $day < $DURATION; $day++)
 
 	print "Day ".$day."\n";
 	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\n";
-	
-#	$csv->add_line(
-#	{
-#		Day	=>	$.day.,
-#		SUS	=>	$.sus.,
-#		EXP	=>	$.exp.,
-#		INF	=>	$.inf.,
-#		REM	=>	$.rec.,
-#	});
-#	$csv-vprint();
 
 	#print Dumper(\%population);
 	#print "\n-------------\n";

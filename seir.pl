@@ -51,13 +51,23 @@ print "Enter duration of model: ";
 chomp(my $DURATION = <STDIN>);
 exit 0 if ($DURATION eq "");
 
+my $R0 = $CONTACT_RATE * $INFECTIVITY * $INFECTIOUS_PERIOD;
+print "\nBasic Reproductive Rate (R0): $R0.\n";
+print "\n ";
+
+{
+	local( $| ) = ( 1 );
+	print "Press <enter> to continue. ";
+	my $resp = <STDIN>;
+}
+
 my %population = ();
 
 #generate population by adding elements to population structure
 for(my $i = 0; $i< $NUM_IND; $i++) 
 {
 	$population{$i}{'infState'} = 0;
-	$population{$i}{'age'} = int(rand(80));
+	$population{$i}{'age'} = int(rand(80)); #unused at the moment.
 	$population{$i}{'dayOfInf'} = 0;
 	$population{$i}{'dayofExp'} = 0;
 }
@@ -113,7 +123,8 @@ for(my $day = 0; $day < $DURATION; $day++)
 		#update stats of the contacted person 
 		if($population{$person}{'infState'} == 1) 
 		{
-			for(my $i = 0; $i<$CONTACT_RATE; $i++) 
+			for my $i (0 .. $CONTACT_RATE-1)
+			#for(my $i = 0; $i<$CONTACT_RATE; $i++) 
 			{
 				#Making sure that a person doesnt contact himself
 				my $r = $person;
@@ -142,7 +153,8 @@ for(my $day = 0; $day < $DURATION; $day++)
 		#update stats of the contacted person 
 		if($population{$person}{'infState'} == 2) 
 		{
-			for(my $i = 0; $i<$CONTACT_RATE; $i++) 
+			for my $i (0 .. $CONTACT_RATE-1)
+			#for(my $i = 0; $i<$CONTACT_RATE; $i++) 
 			{
 				#Making sure that a person doesnt contact himself
 				my $r = $person;

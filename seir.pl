@@ -8,12 +8,16 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
+use Text::CSV;
 STDOUT->autoflush;
 
 my $in = 0;
 my $vac = 0;
 my $recsus = 0;
 my $RECOVERY_PERIOD = 0;
+my $csv = Text::CSV->new({binary => 1, auto_diag => 1, eol => "\n"})
+	or die "Cannot use CSV: " . Text::CSV->error_diag();
+open my $fh, ">>", "seir.csv" or die "Failed to open file: $!";
 
 print "Enter number of individuals: ";
 chomp(my $NUM_IND = <STDIN>);
@@ -133,6 +137,9 @@ foreach my $person (keys %population)
 
 print "Before initiation\n";
 print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
+$csv->print($fh, ["Before Initiaion"]);
+$csv->print($fh, ["SUS", "EXP", "INF", "REM", "DEC"]);
+$csv->print($fh, [$sus, $exp, $inf, $rec, $dec]);
 
 #generating contacts
 #create a clone of %population
@@ -289,10 +296,10 @@ for(my $day = 0; $day < $DURATION; $day++)
 
 	print "Day ".$day."\n";
 	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
-
+	$csv->print($fh, [$sus, $exp, $inf, $rec, $dec]);
 	#print Dumper(\%population);
 	#print "\n-------------\n";
 	#print Dumper(\%population_copy);
 	#print "\n-------------\n";
-
 }
+close $fh;

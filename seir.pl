@@ -137,7 +137,6 @@ foreach my $person (keys %population)
 
 print "Before initiation\n";
 print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
-$csv->print($fh, ["Before Initiaion"]);
 $csv->print($fh, ["SUS", "EXP", "INF", "REM", "DEC"]);
 $csv->print($fh, [$sus, $exp, $inf, $rec, $dec]);
 

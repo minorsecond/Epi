@@ -137,8 +137,8 @@ foreach my $person (keys %population)
 
 print "Before initiation\n";
 print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
-$csv->print($fh, ["SUS", "EXP", "INF", "REM", "DEC"]);
-$csv->print($fh, [$sus, $exp, $inf, $rec, $dec]);
+$csv->print($fh, ["Day", "SUS", "EXP", "INF", "REM", "DEC"]);
+$csv->print($fh, [$day, $sus, $exp, $inf, $rec, $dec]);
 
 #generating contacts
 #create a clone of %population
@@ -295,7 +295,7 @@ for(my $day = 0; $day < $DURATION; $day++)
 
 	print "Day ".$day."\n";
 	print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
-	$csv->print($fh, [$sus, $exp, $inf, $rec, $dec]);
+	$csv->print($fh, [ $day, $sus, $exp, $inf, $rec, $dec]);
 	#print Dumper(\%population);
 	#print "\n-------------\n";
 	#print Dumper(\%population_copy);

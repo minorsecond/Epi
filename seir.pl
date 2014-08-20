@@ -15,7 +15,12 @@ STDOUT->autoflush;
 my $in = 0;
 my $vac = 0;
 my $recsus = 0;
-my $RECOVERY_PERIOD = 0;
+my $RECOVERY_PERIOD;
+my $RESISTANCE;
+my $resstatus;
+my $person = ();
+my %population = ();
+
 my $csv = Text::CSV->new({binary => 1, auto_diag => 1, eol => "\n"})
 	or die "Cannot use CSV: " . Text::CSV->error_diag();
 open my $fh, ">>", "seir.csv" or die "Failed to open file: $!";
@@ -65,8 +70,22 @@ $recsus = 1 if /^Y/i;
 if ($recsus == 1)
 {
 	print "\nEnter recovery period: \n";
-	chomp(my $RECOVERY_PERIOD = <STDIN>);
+	chomp($RECOVERY_PERIOD = <STDIN>);
+	
+	print "Do the individuals who are replaced into susceptible compartment develop resistance to re-infection? \n";
+	$_ = <>;
+	$resstatus = 1 if /^Y/i;
+	
+	if ($resstatus == 1)
+	{
+		for(my $i = 0; $i< $NUM_IND; $i++)
+		{
+			$population{$i}{'resistant'} = 1;
+		}
+		print "Enter probability or re-infection (developed resistance): \n";
+		chomp($RESISTANCE = <>);
 	}
+}
 
 my $R0 = $CONTACT_RATE * $INFECTIVITY * $INFECTIOUS_PERIOD;
 my $V0 = (1 - 1 / $R0) * $NUM_IND;
@@ -83,8 +102,6 @@ print "***Number to vaccinate to prevent sustained spread: $V0.***\n";
 	print "Press <enter> to continue. ";
 	my $resp = <STDIN>;
 }
-my $person = ();
-my %population = ();
 
 #generate population by adding elements to population structure
 for(my $i = 0; $i< $NUM_IND; $i++) 
@@ -169,11 +186,27 @@ for(my $day = 0; $day < $DURATION; $day++)
 				#Infect contacted person based on infectivity
 				if(rand() < $INFECTIVITY) 
 				{
-					if($population_copy{$r}{'infState'} == 0)
+					if($population_copy{$r}{'resistant'} == 0)
 					{
-						if($population_copy{$r}{'vacState'} == 0)
+						if($population_copy{$r}{'infState'} == 0)
 						{
-							$population_copy{$r}{'infState'} = 1;
+							if($population_copy{$r}{'vacState'} == 0)
+							{
+								$population_copy{$r}{'infState'} = 1;
+							}
+						}
+					}
+					elsif($population_copy{$r}{'resistant'} == 1)
+					{
+						if(rand() < $RESISTANCE)
+						{
+							if(rand() < $INFECTIVITY)
+							{
+								if($population_copy{$r}{'infState'} == 0)
+								{
+									$population_copy{$r}{'infState'} = 1;
+								}
+							}
 						}
 					}	
 				}	
@@ -244,7 +277,7 @@ for(my $day = 0; $day < $DURATION; $day++)
 				}
 			}
 			
-			if($population{$person}{'recState'} == 1)
+			elsif($population{$person}{'recState'} == 1)
 			{
 				$population{$person}{'dayofRec'}++;
 				if($population{$person}{'dayofRec'} >= $RECOVERY_PERIOD)
@@ -289,6 +322,7 @@ for(my $day = 0; $day < $DURATION; $day++)
 		{
 			$vac++;
 		}
+		
 	}
 
 

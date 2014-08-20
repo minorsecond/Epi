@@ -1,5 +1,6 @@
-#SIR based disease spread model in perl.
+# SIR based disease spread model in perl.
 # Robert Ross Wardrup
+# 20/08/2014
 
 #!/usr/bin/perl
 
@@ -60,11 +61,10 @@ exit 0 if ($DURATION eq "");
 print "Do recovered individuals become susceptible again? \n";
 $_ = <>;
 $recsus = 1 if /^Y/i;
-print "\n ";
 
 if ($recsus == 1)
 {
-	print "Enter recovery period: \n";
+	print "\nEnter recovery period: \n";
 	chomp(my $RECOVERY_PERIOD = <STDIN>);
 	}
 
@@ -137,8 +137,7 @@ foreach my $person (keys %population)
 
 print "Before initiation\n";
 print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
-$csv->print($fh, ["Day", "SUS", "EXP", "INF", "REM", "DEC"]);
-$csv->print($fh, [$day, $sus, $exp, $inf, $rec, $dec]);
+$csv->print($fh, [ "Day", "Susceptible", "Exposed", "Infected", "Removed", "Deceased"]);
 
 #generating contacts
 #create a clone of %population

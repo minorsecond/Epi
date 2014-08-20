@@ -80,7 +80,7 @@ if ($recsus == 1)
 	{
 		for(my $i = 0; $i< $NUM_IND; $i++)
 		{
-			$population{$i}{'resistant'} = 1;
+			$population{$i}{'resistant'} = 0;
 		}
 		print "Enter probability or re-infection (developed resistance): \n";
 		chomp($RESISTANCE = <>);
@@ -200,12 +200,9 @@ for(my $day = 0; $day < $DURATION; $day++)
 					{
 						if(rand() < $RESISTANCE)
 						{
-							if(rand() < $INFECTIVITY)
+							if($population_copy{$r}{'infState'} == 0)
 							{
-								if($population_copy{$r}{'infState'} == 0)
-								{
-									$population_copy{$r}{'infState'} = 1;
-								}
+								$population_copy{$r}{'infState'} = 1;
 							}
 						}
 					}	

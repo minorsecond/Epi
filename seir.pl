@@ -92,6 +92,11 @@ my $V0 = (1 - 1 / $R0) * $NUM_IND;
 print "\n***Basic Reproductive Rate (R0): $R0.***\n";
 print "***Number to vaccinate to prevent sustained spread: $V0.***\n";
 
+print "Enter random number seed: \n";
+chomp(my $seed = <>);
+exit 0 if ($seed eq "");
+srand($seed);
+
 #print "Use this number in vaccination calculation? (Y/n)\n";
 #$_ = <>;
 #$VAC = $V0 / $DURATION if /^Y/i;
@@ -163,6 +168,8 @@ $csv->print($fh, [ "Day", "Susceptible", "Exposed", "Infected", "Removed", "Dece
 
 
 #Run the simulation for each day
+if (($exp + $inf + $rec) > 0)
+{
 for(my $day = 0; $day < $DURATION; $day++) 
 {
 	#Creating a temporary copy of population to make updates to infection state
@@ -330,5 +337,6 @@ for(my $day = 0; $day < $DURATION; $day++)
 	#print "\n-------------\n";
 	#print Dumper(\%population_copy);
 	#print "\n-------------\n";
+}
 }
 close $fh;

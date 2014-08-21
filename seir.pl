@@ -25,6 +25,12 @@ my $csv = Text::CSV->new({binary => 1, auto_diag => 1, eol => "\n"})
 	or die "Cannot use CSV: " . Text::CSV->error_diag();
 open my $fh, ">>", "seir.csv" or die "Failed to open file: $!";
 
+
+print "Enter random number seed: ";
+chomp(my $seed = <>);
+exit 0 if ($seed eq "");
+srand($seed);
+
 print "Enter number of individuals: ";
 chomp(my $NUM_IND = <STDIN>);
 exit 0 if ($NUM_IND eq "");
@@ -63,16 +69,16 @@ print "Enter duration of model: ";
 chomp(my $DURATION = <STDIN>);
 exit 0 if ($DURATION eq "");
 
-print "Do recovered individuals become susceptible again? \n";
+print "Do recovered individuals become susceptible again? ";
 $_ = <>;
 $recsus = 1 if /^Y/i;
 
 if ($recsus == 1)
 {
-	print "\nEnter recovery period: \n";
+	print "Enter recovery period: ";
 	chomp($RECOVERY_PERIOD = <STDIN>);
 	
-	print "Do the individuals who are replaced into susceptible compartment develop resistance to re-infection? \n";
+	print "Do the individuals who are replaced into susceptible compartment develop resistance to re-infection? ";
 	$_ = <>;
 	$resstatus = 1 if /^Y/i;
 	
@@ -82,7 +88,7 @@ if ($recsus == 1)
 		{
 			$population{$i}{'resistant'} = 0;
 		}
-		print "Enter probability or re-infection (developed resistance): \n";
+		print "Enter probability or re-infection (developed resistance): ";
 		chomp($RESISTANCE = <>);
 	}
 }
@@ -92,11 +98,6 @@ my $V0 = (1 - 1 / $R0) * $NUM_IND;
 print "\n***Basic Reproductive Rate (R0): $R0.***\n";
 print "***Number to vaccinate to prevent sustained spread: $V0.***\n";
 
-print "Enter random number seed: \n";
-chomp(my $seed = <>);
-exit 0 if ($seed eq "");
-srand($seed);
-
 #print "Use this number in vaccination calculation? (Y/n)\n";
 #$_ = <>;
 #$VAC = $V0 / $DURATION if /^Y/i;
@@ -104,7 +105,7 @@ srand($seed);
 
 {
 	local( $| ) = ( 1 );
-	print "Press <enter> to continue. ";
+	print "\n\nPress <enter> to continue. ";
 	my $resp = <STDIN>;
 }
 

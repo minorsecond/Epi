@@ -21,6 +21,11 @@ my $resstatus;
 my $person = ();
 my %population = ();
 my $sum = 1;
+my $EF;
+my $VAC;
+my $ynVAC = 8;
+my $VACS = 0;
+
 
 my $csv = Text::CSV->new({binary => 1, auto_diag => 1, eol => "\n"})
 	or die "Cannot use CSV: " . Text::CSV->error_diag();
@@ -72,11 +77,17 @@ chomp(my $INCUB = <STDIN>);
 exit 0 if ($INCUB eq "");
 print $txt "Incubation period: $INCUB\n";
 
-#print "Enter number of vaccinations per day: ";
-#chomp(my $VAC = <STDIN>);
+print "Include vaccinations in model? (Y/n) ***CURRENTLY BROKEN*** ";
+$_ = <STDIN>;
+$VACS = 1 if /^Y/i;
 
-#print "Enter vaccine efficacy: ";
-#chomp(my $EF = <STDIN>);
+if ($VACS == 1){
+	print "Enter number of vaccinations per day: ";
+	chomp(my $VAC = <STDIN>);
+
+	print "Enter vaccine efficacy: ";
+	chomp(my $EF = <STDIN>);
+}
 
 print "Enter duration of model: ";
 chomp(my $DURATION = <STDIN>);
@@ -185,7 +196,8 @@ close $fh;
 for(my $day = 0; $day < $DURATION; $day++) {
 	if($sum > 0){
 		open my $fh, ">>", "seir.csv" or die "Failed to open file: $!";
-		#Creating a temporary copy of population to make updates to infection state
+		
+		#Creating a temporary copy of population to make updates to infection state. This prevents errors.
 		my %population_copy = %{dclone(\%population)};
 
 		foreach my $person (keys %population) {
@@ -216,31 +228,29 @@ for(my $day = 0; $day < $DURATION; $day++) {
 			}
 		}
 
-	# Vaccinate individuals
-	#	for my $i (0 .. $VAC - 1)
-	#	{
-	#	keys %population;
-	#			if($population{$person}{'vacState'} == 0)
-	#				{
-	#					my $r = $person;
-	#					while($r == $person)
-	#						$r = int(rand($NUM_IND));
-	#				}
-	#						if(rand() < $EF)
-	#						{
-	#							if($population_copy{$person}{'vacState'} == 0)
-	#							{
-	#								$population_copy{$person}{'vacState'} = 1;
-	#							}
-	#						}
-	#				}
-	#			}
-
+	#Vaccinate individuals
+	if($VACS == 1){
+		for my $i (0 .. $VAC - 1){
+			foreach my $person (keys %population){
+				if($population{$person}{'vacState'} == 0){
+					my $r = $person;
+					while($r == $person){
+						$r = int(rand($NUM_IND));
+					}
+				}
+					if(rand() < $EF){
+						if($population_copy{$person}{'vacState'} == 0){
+							$population_copy{$person}{'vacState'} = 1;
+						}
+					}
+			}
+		}
+	}
 		%population = %{dclone(\%population_copy)};
 
-		#Update stats for each person at the end of a day.
-		foreach my $person (keys %population) {
-			if($population{$person}{'infState'} == 1) {
+		#Update stats for each person at the end of a day
+		foreach my $person (keys %population){
+			if($population{$person}{'infState'} == 1){
 				$population{$person}{'dayOfExp'}++;
 				if($population{$person}{'dayOfExp'} >= $INCUB) 
 				{
@@ -283,17 +293,17 @@ for(my $day = 0; $day < $DURATION; $day++) {
 		my $rec = 0;
 		my $dec = 0;
 		my $vac = 0;
-		foreach my $person (keys %population) {
-			if($population{$person}{'infState'} == 0) {
+		foreach my $person (keys %population){
+			if($population{$person}{'infState'} == 0){
 				$sus++;
 			}
-			if($population{$person}{'infState'} == 1) {
+			if($population{$person}{'infState'} == 1){
 				$exp++;
 			}
 			if($population{$person}{'infState'} == 2){
 				$inf++;
 			}
-			if($population{$person}{'infState'} == 3) {
+			if($population{$person}{'infState'} == 3){
 				$rec++;
 			}
 			if($population{$person}{'infState'} == 4){

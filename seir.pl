@@ -162,8 +162,8 @@ for(my $i = 0; $i< $NUM_IND; $i++) {
 	$population{$i}{'dayofRec'} = 0;
 	$population{$i}{'recState'} = 0;
 	$population{$i}{'resistant'} = 0;
-	$population{$i}{'incubationp'} = random_exponential($INCUB);
-	$population{$i}{'infectiousp'} = random_exponential($INFECTIOUS_PERIOD);
+	$population{$i}{'incubationp'} = random_exponential(1, $INCUB);
+	$population{$i}{'infectiousp'} = random_exponential(1,$INFECTIOUS_PERIOD);
 }
 
 # Generates initial infections fir $init number of people.

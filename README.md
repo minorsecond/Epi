@@ -7,4 +7,4 @@ You must have the Text::CSV module installed for this code to run. In terminal, 
 
 $cpan -i Text::CSV
 
-The progrma includes an option to reintroduce a percentage of the recovered population back into the susceptible compartment, based on the disease mortality rate. This model decides outcome based on probability and random number generators, using a gaussian distribution.
+The program includes an option to reintroduce a percentage of the recovered population back into the susceptible compartment, based on the disease mortality rate. This model decides outcome based on probability and random number generators, using a gaussian distribution.

@@ -17,7 +17,7 @@ my $vac = 0;
 my $recsus = 0;
 my $RECOVERY_PERIOD;
 my $RESISTANCE;
-my $resstatus;
+my $resstatus = 0;
 my $person = ();
 my %population = ();
 my $sum = 1;
@@ -42,9 +42,6 @@ sub prompt_yn {
   my $answer = prompt("$query (Y/N): ");
   return lc($answer) eq 'y';  
 }
-
-
-
 
 if (-e $params) {
 	if (prompt_yn("Previous results exist. Overwrite?")){
@@ -131,31 +128,25 @@ chomp(my $DURATION = <STDIN>);
 exit 0 if ($DURATION eq "");
 print $txt "Max duration: $DURATION\n";
 
-print "Do recovered individuals become susceptible again? ";
-$_ = <>;
-$recsus = 1 if /^Y/i;
-print $txt "Gain susceptiblity? $_";
-
-if ($recsus == 1){
+if (prompt_yn("Do individuals regain susceptibility after recovering from disease?")){
+	$recsus = 1;
+	print $txt "Gain susceptibility - Y";
 	print "Enter recovery period: ";
 	chomp($RECOVERY_PERIOD = <STDIN>);
-	print $txt "Recovery period: $RECOVERY_PERIOD";
-	
-	print "Do the individuals who are replaced into susceptible compartment develop resistance to re-infection? ";
-	$_ = <>;
-	$resstatus = 1 if /^Y/i;
-	print $txt "Gain resistance? $_";
-	
+	print $txt "Recovery period - $RECOVERY_PERIOD";
+
+	if (prompt_yn("Do individuals develop resistance to re-infection?")){
+		$resstatus = 1;
+		print $txt "Gain resistance - Y";
+		
+	}
 	if ($resstatus == 1){
-		for(my $i = 0; $i< $NUM_IND; $i++){
-			$population{$i}{'resistant'} = 0;
-		}
-		print "Enter probability or re-infection (developed resistance): ";
-		chomp($RESISTANCE = <>);
-		print $txt "Resistance: $RESISTANCE";
+	print "Enter probability or re-infection (developed resistance): ";
+	chomp($RESISTANCE = <>);
+	print $txt "Resistance: $RESISTANCE";
 	}
 }
-
+	
 my $R0 = $CONTACT_RATE * $INFECTIVITY * $INFECTIOUS_PERIOD;
 my $V0 = (1 - 1 / $R0) * $NUM_IND;
 print "\n***Basic Reproductive Rate (R0): $R0.***\n";
@@ -190,6 +181,7 @@ for(my $i = 0; $i< $NUM_IND; $i++) {
 	$population{$i}{'vacState'} = 0;
 	$population{$i}{'dayofRec'} = 0;
 	$population{$i}{'recState'} = 0;
+	$population{$i}{'resistant'} = 0;
 }
 
 # Generates initial infections fir $init number of people.

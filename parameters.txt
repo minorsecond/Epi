@@ -1,0 +1,13 @@
+SEIR Model Parameters
+--------------------
+Seed: 5
+Number of Individuals: 1000
+Initial number of infections: 1
+Contact rate: 5
+Infectious Period: 7
+Infectivity: .05
+Mortality rate: .25
+Incubation period: 10
+Max duration: 365
+Gain susceptibility - YRecovery period - 30R0: 1.75
+Vaccination needed: 428.571428571429

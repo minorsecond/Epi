@@ -25,7 +25,7 @@ my $EF;
 my $VAC;
 my $ynVAC = 8;
 my $VACS = 0;
-my $params = "parameters.txt";
+my $params = "parameters.log";
 my $results = "seir.csv";
 my $delete = 0;
 
@@ -65,7 +65,7 @@ my $csv = Text::CSV->new({binary => 1, auto_diag => 1, eol => "\n"})
 	or die "Cannot use CSV: " . Text::CSV->error_diag();
 open my $fh, ">>", "seir.csv" or die "Failed to open file: $!";
 
-my $filename = 'parameters.txt';
+my $filename = 'parameters.log';
 open(my $txt, ">", $filename) or die "Could not open file '$filename' $!";
 print $txt "SEIR Model Parameters\n";
 print $txt "--------------------\n";

@@ -130,10 +130,10 @@ print $txt "Max duration: $DURATION\n";
 
 if (prompt_yn("Do individuals regain susceptibility after recovering from disease?")){
 	$recsus = 1;
-	print $txt "Gain susceptibility - Y";
+	print $txt "Gain susceptibility - Y \n";
 	print "Enter recovery period: ";
 	chomp($RECOVERY_PERIOD = <STDIN>);
-	print $txt "Recovery period - $RECOVERY_PERIOD";
+	print $txt "Recovery period - $RECOVERY_PERIOD\n";
 
 	if (prompt_yn("Do individuals develop resistance to re-infection?")){
 		$resstatus = 1;
@@ -143,7 +143,7 @@ if (prompt_yn("Do individuals regain susceptibility after recovering from diseas
 	if ($resstatus == 1){
 	print "Enter probability or re-infection (developed resistance) (0.x): ";
 	chomp($RESISTANCE = <>);
-	print $txt "Resistance: $RESISTANCE";
+	print $txt "Resistance: $RESISTANCE\n";
 	}
 }
 	

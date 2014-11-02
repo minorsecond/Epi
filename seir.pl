@@ -96,12 +96,12 @@ chomp(my $INFECTIOUS_PERIOD = <STDIN>);
 exit 0 if ($INFECTIOUS_PERIOD eq "");
 print $txt "Infectious Period: $INFECTIOUS_PERIOD\n";
 
-print "Enter disease virulence: ";
+print "Enter disease virulence (0.x): ";
 chomp(my $INFECTIVITY = <STDIN>);
 exit 0 if ($INFECTIVITY eq "");
 print $txt "Infectivity: $INFECTIVITY\n";
 
-print "Enter disease mortality rate: ";
+print "Enter disease mortality rate (0.x): ";
 chomp(my $MORTALITY = <STDIN>);
 exit 0 if ($MORTALITY eq "");
 print $txt "Mortality rate: $MORTALITY\n";
@@ -141,7 +141,7 @@ if (prompt_yn("Do individuals regain susceptibility after recovering from diseas
 		
 	}
 	if ($resstatus == 1){
-	print "Enter probability or re-infection (developed resistance): ";
+	print "Enter probability or re-infection (developed resistance) (0.x): ";
 	chomp($RESISTANCE = <>);
 	print $txt "Resistance: $RESISTANCE";
 	}

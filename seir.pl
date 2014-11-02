@@ -4,16 +4,19 @@
 
 #!/usr/bin/perl
 
+use lib "/home/rwardrup/perl5/lib/perl5";
 use 5.14.2;
 use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
 use Text::CSV;
+	use Math::Random qw(random_exponential
+						random_set_seed_from_phrase
+	);
 STDOUT->autoflush;
 
 my $in = 0;
-my $vac = 0;
 my $recsus = 0;
 my $RECOVERY_PERIOD;
 my $RESISTANCE;
@@ -22,9 +25,6 @@ my $person = ();
 my %population = ();
 my $sum = 1;
 my $EF;
-my $VAC;
-my $ynVAC = 8;
-my $VACS = 0;
 my $params = "parameters.log";
 my $results = "seir.csv";
 my $delete = 0;
@@ -70,11 +70,10 @@ open(my $txt, ">", $filename) or die "Could not open file '$filename' $!";
 print $txt "SEIR Model Parameters\n";
 print $txt "--------------------\n";
 
-print "Enter random number seed: ";
-chomp(my $seed = <>);
-exit 0 if ($seed eq "");
-srand($seed);
-print $txt "Seed: $seed\n";
+print "Enter phrase for random seed generator: ";
+chomp(my $phrase = <STDIN>);
+print $txt "Seed phrase: $phrase\n";
+random_set_seed_from_phrase($phrase);
 
 print "Enter number of individuals: ";
 chomp(my $NUM_IND = <STDIN>);
@@ -91,7 +90,7 @@ chomp(my $CONTACT_RATE = <STDIN>);
 exit 0 if ($CONTACT_RATE eq "");
 print $txt "Contact rate: $CONTACT_RATE\n";
 
-print "Enter disease infectious period: ";
+print "Enter mean disease infectious period: ";
 chomp(my $INFECTIOUS_PERIOD = <STDIN>);
 exit 0 if ($INFECTIOUS_PERIOD eq "");
 print $txt "Infectious Period: $INFECTIOUS_PERIOD\n";
@@ -106,22 +105,10 @@ chomp(my $MORTALITY = <STDIN>);
 exit 0 if ($MORTALITY eq "");
 print $txt "Mortality rate: $MORTALITY\n";
 
-print "Enter disease incubation period: ";
+print "Enter mean disease incubation period: ";
 chomp(my $INCUB = <STDIN>);
 exit 0 if ($INCUB eq "");
 print $txt "Incubation period: $INCUB\n";
-
-#print "Include vaccinations in model? (Y/n) ***CURRENTLY BROKEN*** ";
-#$_ = <STDIN>;
-#$VACS = 1 if /^Y/i;
-
-#if ($VACS == 1){
-#	print "Enter number of vaccinations per day: ";
-#	chomp(my $VAC = <STDIN>);
-
-#	print "Enter vaccine efficacy: ";
-#	chomp(my $EF = <STDIN>);
-#}
 
 print "Enter duration of model: ";
 chomp(my $DURATION = <STDIN>);
@@ -156,11 +143,6 @@ print $txt "Vaccination needed: $V0\n";
 
 close $txt;
 
-#print "Use this number in vaccination calculation? (Y/n)\n";
-#$_ = <>;
-#$VAC = $V0 / $DURATION if /^Y/i;
-#print "\n ";
-
 {
 	local( $| ) = ( 1 );
 	print "\n\n\n\n";
@@ -175,13 +157,13 @@ close $txt;
 
 for(my $i = 0; $i< $NUM_IND; $i++) {
 	$population{$i}{'infState'} = 0;
-#	$population{$i}{'age'} = int(rand(80)); #unused at the moment.
 	$population{$i}{'dayOfInf'} = 0;
 	$population{$i}{'dayofExp'} = 0;
-	$population{$i}{'vacState'} = 0;
 	$population{$i}{'dayofRec'} = 0;
 	$population{$i}{'recState'} = 0;
 	$population{$i}{'resistant'} = 0;
+	$population{$i}{'incubationp'} = random_exponential($INCUB);
+	$population{$i}{'infectiousp'} = random_exponential($INFECTIOUS_PERIOD);
 }
 
 # Generates initial infections fir $init number of people.
@@ -211,9 +193,6 @@ foreach my $person (keys %population) {
 	if($population{$person}{'infState'} == 4){
 		$dec++;
 	}
-	if($population{$person}{'vacState'} == 1) {
-		$vac++;
-	}
 }
 
 
@@ -239,9 +218,7 @@ for(my $day = 0; $day < $DURATION; $day++) {
 					if(rand() < $INFECTIVITY) {
 						if($population_copy{$r}{'resistant'} == 0){
 							if($population_copy{$r}{'infState'} == 0){
-								if($population_copy{$r}{'vacState'} == 0){
-									$population_copy{$r}{'infState'} = 1;
-								}
+								$population_copy{$r}{'infState'} = 1;
 							}
 						}
 						elsif($population_copy{$r}{'resistant'} == 1){
@@ -257,31 +234,13 @@ for(my $day = 0; $day < $DURATION; $day++) {
 			}
 		}
 
-	#Vaccinate individuals
-	if($VACS == 1){
-		for my $i (0 .. $VAC - 1){
-			foreach my $person (keys %population){
-				if($population{$person}{'vacState'} == 0){
-					my $r = $person;
-					while($r == $person){
-						$r = int(rand($NUM_IND));
-					}
-				}
-					if(rand() < $EF){
-						if($population_copy{$person}{'vacState'} == 0){
-							$population_copy{$person}{'vacState'} = 1;
-						}
-					}
-			}
-		}
-	}
 		%population = %{dclone(\%population_copy)};
 
 		#Update stats for each person at the end of a day
 		foreach my $person (keys %population){
 			if($population{$person}{'infState'} == 1){
 				$population{$person}{'dayOfExp'}++;
-				if($population{$person}{'dayOfExp'} >= $INCUB) 
+				if($population{$person}{'dayOfExp'} >= $population{$person}{'incubationp'}) 
 				{
 					$population{$person}{'infState'} = 2;
 				}
@@ -289,7 +248,7 @@ for(my $day = 0; $day < $DURATION; $day++) {
 			
 			if($population{$person}{'infState'} == 2){
 				$population{$person}{'dayofInf'}++;
-				if($population{$person}{'dayofInf'} >= $INFECTIOUS_PERIOD){
+				if($population{$person}{'dayofInf'} >= $population{$person}{'infectiousp'}){
 					$population{$person}{'infState'} = 3;
 				}
 			}
@@ -321,7 +280,6 @@ for(my $day = 0; $day < $DURATION; $day++) {
 		my $inf = 0;
 		my $rec = 0;
 		my $dec = 0;
-		my $vac = 0;
 		foreach my $person (keys %population){
 			if($population{$person}{'infState'} == 0){
 				$sus++;
@@ -337,9 +295,6 @@ for(my $day = 0; $day < $DURATION; $day++) {
 			}
 			if($population{$person}{'infState'} == 4){
 				$dec++;
-			}
-			if($population{$person}{'vacState'} == 1){
-				$vac++;
 			}
 			
 		}

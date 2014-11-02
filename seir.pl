@@ -111,17 +111,17 @@ chomp(my $INCUB = <STDIN>);
 exit 0 if ($INCUB eq "");
 print $txt "Incubation period: $INCUB\n";
 
-print "Include vaccinations in model? (Y/n) ***CURRENTLY BROKEN*** ";
-$_ = <STDIN>;
-$VACS = 1 if /^Y/i;
+#print "Include vaccinations in model? (Y/n) ***CURRENTLY BROKEN*** ";
+#$_ = <STDIN>;
+#$VACS = 1 if /^Y/i;
 
-if ($VACS == 1){
-	print "Enter number of vaccinations per day: ";
-	chomp(my $VAC = <STDIN>);
+#if ($VACS == 1){
+#	print "Enter number of vaccinations per day: ";
+#	chomp(my $VAC = <STDIN>);
 
-	print "Enter vaccine efficacy: ";
-	chomp(my $EF = <STDIN>);
-}
+#	print "Enter vaccine efficacy: ";
+#	chomp(my $EF = <STDIN>);
+#}
 
 print "Enter duration of model: ";
 chomp(my $DURATION = <STDIN>);
@@ -148,7 +148,7 @@ if (prompt_yn("Do individuals regain susceptibility after recovering from diseas
 }
 	
 my $R0 = $CONTACT_RATE * $INFECTIVITY * $INFECTIOUS_PERIOD;
-my $V0 = (1 - 1 / $R0) * $NUM_IND;
+my $V0 = int((1 - 1 / $R0) * $NUM_IND);
 print "\n***Basic Reproductive Rate (R0): $R0.***\n";
 print "***Number to vaccinate to prevent sustained spread: $V0.***\n";
 print $txt "R0: $R0\n";
@@ -218,7 +218,7 @@ foreach my $person (keys %population) {
 
 
 print "Before initiation\n";
-print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
+print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\n";
 $csv->print($fh, [ "Day", "Susceptible", "Exposed", "Infected", "Removed", "Deceased"]);
 close $fh;
 
@@ -346,10 +346,9 @@ for(my $day = 0; $day < $DURATION; $day++) {
 
 
 		print "Day ".$day."\n";
-		print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tVAC: ".$vac."\n";
+		print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\n";
 		$csv->print($fh, [ $day, $sus, $exp, $inf, $rec, $dec]);
 		$sum = ($exp + $inf + $rec);
 		}
 		close $fh;
 }
-

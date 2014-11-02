@@ -25,7 +25,44 @@ my $EF;
 my $VAC;
 my $ynVAC = 8;
 my $VACS = 0;
+my $params = "parameters.txt";
+my $results = "seir.csv";
+my $delete = 0;
 
+sub prompt {
+  my ($query) = @_; # take a prompt string as argument
+  local $| = 1; # activate autoflush to immediately show the prompt
+  print $query;
+  chomp(my $answer = <STDIN>);
+  return $answer;
+}
+
+sub prompt_yn {
+  my ($query) = @_;
+  my $answer = prompt("$query (Y/N): ");
+  return lc($answer) eq 'y';  
+}
+
+
+
+
+if (-e $params) {
+	if (prompt_yn("Previous results exist. Overwrite?")){
+		unlink ($params);
+		unlink ($results);
+	}
+	else{
+		print "Halting. Save previous results and run again. \n";
+		die;
+	}
+}
+
+elsif (-e $results) {
+	if (prompt_yn("Previous results exist. Overwrite?")){
+		unlink ($params);
+		unlink ($results);
+		}
+}
 
 my $csv = Text::CSV->new({binary => 1, auto_diag => 1, eol => "\n"})
 	or die "Cannot use CSV: " . Text::CSV->error_diag();

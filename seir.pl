@@ -259,13 +259,11 @@ for(my $day = 0; $day < $DURATION; $day++) {
 						if($population{$person}{'infState'} == 3){
 							$population{$person}{'recState'} = 1;
 						}
-				
-				elsif($population{$person}{'infState'} == 3){
-						$population{$person}{'infState'} = 4;
 					}
-					}
-			}
-				
+				}
+			elsif($population{$person}{'infState'} == 3){
+					$population{$person}{'infState'} = 4;
+			}				
 				elsif($population{$person}{'recState'} == 1){
 					$population{$person}{'dayofRec'}++;
 					if($population{$person}{'dayofRec'} >= $RECOVERY_PERIOD){

@@ -11,7 +11,7 @@ use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
 use Text::CSV;
-	use Math::Random qw(random_exponential
+	use Math::Random qw(random_normal
 						random_set_seed_from_phrase
 	);
 STDOUT->autoflush;
@@ -162,8 +162,8 @@ for(my $i = 0; $i< $NUM_IND; $i++) {
 	$population{$i}{'dayofRec'} = 0;
 	$population{$i}{'recState'} = 0;
 	$population{$i}{'resistant'} = 0;
-	$population{$i}{'incubationp'} = random_exponential(1, $INCUB);
-	$population{$i}{'infectiousp'} = random_exponential(1,$INFECTIOUS_PERIOD);
+	$population{$i}{'incubationp'} = scalar random_normal(1, $INCUB, 5);
+	$population{$i}{'infectiousp'} = scalar random_normal(1,$INFECTIOUS_PERIOD, 5);
 }
 
 # Generates initial infections fir $init number of people.

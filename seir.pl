@@ -28,6 +28,7 @@ my $EF;
 my $params = "parameters.log";
 my $results = "seir.csv";
 my $delete = 0;
+my $sdev = 3;
 
 sub prompt {
   my ($query) = @_; # take a prompt string as argument
@@ -162,8 +163,8 @@ for(my $i = 0; $i< $NUM_IND; $i++) {
 	$population{$i}{'dayofRec'} = 0;
 	$population{$i}{'recState'} = 0;
 	$population{$i}{'resistant'} = 0;
-	$population{$i}{'incubationp'} = scalar random_normal(1, $INCUB, 5);
-	$population{$i}{'infectiousp'} = scalar random_normal(1,$INFECTIOUS_PERIOD, 5);
+	$population{$i}{'incubationp'} = scalar random_normal(1, $INCUB, $sdev);
+	$population{$i}{'infectiousp'} = scalar random_normal(1,$INFECTIOUS_PERIOD, $sdev);
 }
 
 # Generates initial infections fir $init number of people.
@@ -246,30 +247,31 @@ for(my $day = 0; $day < $DURATION; $day++) {
 				}
 			}
 			
-			if($population{$person}{'infState'} == 2){
+			elsif($population{$person}{'infState'} == 2){
 				$population{$person}{'dayofInf'}++;
 				if($population{$person}{'dayofInf'} >= $population{$person}{'infectiousp'}){
 					$population{$person}{'infState'} = 3;
 				}
 			}
 			
-			if ($recsus == 1){
+			elsif ($recsus == 1){
 				if($population{$person}{'recState'} == 0){
 					if(rand() > $MORTALITY){
 						if($population{$person}{'infState'} == 3){
 							$population{$person}{'recState'} = 1;
 						}
 					}
-				}
-			elsif($population{$person}{'infState'} == 3){
-					$population{$person}{'infState'} = 4;
-			}				
-				elsif($population{$person}{'recState'} == 1){
-					$population{$person}{'dayofRec'}++;
-					if($population{$person}{'dayofRec'} >= $RECOVERY_PERIOD){
-						$population{$person}{'infState'} = 0;
+					elsif($population{$person}{'infState'} == 3){
+						$population{$person}{'infState'} = 4;
 					}
 				}
+
+			elsif($population{$person}{'recState'} == 1){
+				$population{$person}{'dayofRec'}++;
+				if($population{$person}{'dayofRec'} >= $RECOVERY_PERIOD){
+					$population{$person}{'infState'} = 0;
+				}
+			}
 			}
 		}
 		

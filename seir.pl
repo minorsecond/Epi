@@ -28,7 +28,7 @@ my $EF;
 my $params = "parameters.log";
 my $results = "seir.csv";
 my $delete = 0;
-my $sdev = 3;
+my $sdev = 5;
 
 sub prompt {
   my ($query) = @_; # take a prompt string as argument
@@ -191,7 +191,7 @@ foreach my $person (keys %population) {
 	if($population{$person}{'infState'} == 3) {
 		$rec++;
 	}
-	if($population{$person}{'infState'} == 4){
+	if($population{$person}{'infState'} == 4) {
 		$dec++;
 	}
 }

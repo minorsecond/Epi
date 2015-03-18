@@ -5,15 +5,16 @@
 #!/usr/bin/perl
 
 use lib "/home/rwardrup/perl5/lib/perl5";
-use 5.14.2;
+use 4.14.2;
 use strict;
 use warnings;
 use Data::Dumper;
 use Storable qw(dclone);
 use Text::CSV;
-	use Math::Random qw(random_normal
-						random_set_seed_from_phrase
+use Math::Random qw(random_normal
+	random_set_seed_from_phrase
 	);
+
 STDOUT->autoflush;
 
 my $in = 0;
@@ -28,7 +29,8 @@ my $EF;
 my $params = "parameters.log";
 my $results = "seir.csv";
 my $delete = 0;
-my $sdev = 5;
+my $sdev = 2;
+my $totSick = 0;
 
 sub prompt {
   my ($query) = @_; # take a prompt string as argument
@@ -220,6 +222,7 @@ for(my $day = 0; $day < $DURATION; $day++) {
 						if($population_copy{$r}{'resistant'} == 0){
 							if($population_copy{$r}{'infState'} == 0){
 								$population_copy{$r}{'infState'} = 1;
+								$totSick++;
 							}
 						}
 						elsif($population_copy{$r}{'resistant'} == 1){
@@ -301,9 +304,9 @@ for(my $day = 0; $day < $DURATION; $day++) {
 
 
 		print "Day ".$day."\n";
-		print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\n";
+		print "SUS: ".$sus."\tEXP: ".$exp."\tINF: ".$inf."\tREM: ".$rec."\tDEC: ".$dec."\tTotal Sick: ".$totSick."\n";
 		$csv->print($fh, [ $day, $sus, $exp, $inf, $rec, $dec]);
 		$sum = ($exp + $inf + $rec);
-		}
+	}
 		close $fh;
 }

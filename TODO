@@ -1,0 +1,2 @@
+Add age as a factor in susceptibility. Prompt user to enter median age and use probability distribution to generate
+age based on a set standard deviation.
